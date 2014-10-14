@@ -21,8 +21,7 @@ if ($id) {
     if (!$facetoface = $DB->get_record('facetoface', array('id' => $cm->instance))) {
         print_error('error:incorrectcoursemodule', 'facetoface');
     }
-}
-elseif ($f) {
+} elseif ($f) {
     if (!$facetoface = $DB->get_record('facetoface', array('id' => $f))) {
         print_error('error:incorrectfacetofaceid', 'facetoface');
     }
@@ -32,8 +31,7 @@ elseif ($f) {
     if (!$cm = get_coursemodule_from_instance('facetoface', $facetoface->id, $course->id)) {
         print_error('error:incorrectcoursemoduleid', 'facetoface');
     }
-}
-else {
+} else {
     print_error('error:mustspecifycoursemodulefacetoface', 'facetoface');
 }
 
@@ -52,7 +50,12 @@ if (!empty($download)) {
 require_course_login($course, true, $cm);
 require_capability('mod/facetoface:view', $context);
 
-add_to_log($course->id, 'facetoface', 'view', "view.php?id=$cm->id", $facetoface->id, $cm->id);
+//add_to_log($course->id, 'facetoface', 'view', "view.php?id=$cm->id", $facetoface->id, $cm->id);
+//Replacing add_to_log() with $event->trigger()
+//
+$eventparams = array('objectid' => $facetoface->id, 'context' => context_module::instance($cm->id));
+$event = \mod_facetoface\event\course_module_viewed::create($eventparams);
+$event->trigger();
 
 $title = $course->shortname . ': ' . format_string($facetoface->name);
 
@@ -63,8 +66,8 @@ $PAGE->set_button(update_module_button($cm->id, '', get_string('modulename', 'fa
 $pagetitle = format_string($facetoface->name);
 
 $f2f_renderer = $PAGE->get_renderer('mod_facetoface');
-
-$completion=new completion_info($course);
+//
+$completion = new completion_info($course);
 $completion->set_module_viewed($cm);
 
 echo $OUTPUT->header();
@@ -76,7 +79,7 @@ echo $OUTPUT->box_start();
 echo $OUTPUT->heading(get_string('allsessionsin', 'facetoface', $facetoface->name), 2);
 
 if ($facetoface->intro) {
-    echo $OUTPUT->box_start('generalbox','description');
+    echo $OUTPUT->box_start('generalbox', 'description');
     echo format_module_intro('facetoface', $facetoface, $cm->id);
     echo $OUTPUT->box_end();
 }
@@ -88,7 +91,7 @@ if (count($locations) > 2) {
     echo html_writer::start_tag('div') . html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'f', 'value' => $facetoface->id));
     echo html_writer::select($locations, 'location', $location, '');
     echo html_writer::empty_tag('input', array('type' => 'submit', 'value' => get_string('showbylocation', 'facetoface')));
-    echo html_writer::end_tag('div'). html_writer::end_tag('form');
+    echo html_writer::end_tag('div') . html_writer::end_tag('form');
 }
 
 print_session_list($course->id, $facetoface->id, $location);
@@ -99,10 +102,10 @@ if (has_capability('mod/facetoface:viewattendees', $context)) {
     echo html_writer::start_tag('div') . html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'f', 'value' => $facetoface->id));
     echo get_string('format', 'facetoface') . '&nbsp;';
     $formats = array('excel' => get_string('excelformat', 'facetoface'),
-                     'ods' => get_string('odsformat', 'facetoface'));
+        'ods' => get_string('odsformat', 'facetoface'));
     echo html_writer::select($formats, 'download', 'excel', '');
     echo html_writer::empty_tag('input', array('type' => 'submit', 'value' => get_string('exporttofile', 'facetoface')));
-    echo html_writer::end_tag('div'). html_writer::end_tag('form');
+    echo html_writer::end_tag('div') . html_writer::end_tag('form');
 }
 
 echo $OUTPUT->box_end();
@@ -118,20 +121,20 @@ function print_session_list($courseid, $facetofaceid, $location) {
     $context = context_course::instance($courseid);
     $viewattendees = has_capability('mod/facetoface:viewattendees', $context);
     $editsessions = has_capability('mod/facetoface:editsessions', $context);
-
+    //
     $bookedsession = null;
     if ($submissions = facetoface_get_user_submissions($facetofaceid, $USER->id)) {
         $submission = array_shift($submissions);
         $bookedsession = $submission;
     }
-
+    //
     $customfields = facetoface_get_session_customfields();
 
     $upcomingarray = array();
     $previousarray = array();
     $upcomingtbdarray = array();
-
-    if ($sessions = facetoface_get_sessions($facetofaceid, $location) ) {
+    //
+    if ($sessions = facetoface_get_sessions($facetofaceid, $location)) {
         foreach ($sessions as $session) {
 
             $sessionstarted = false;
@@ -154,19 +157,15 @@ function print_session_list($courseid, $facetofaceid, $location) {
             // Check if session is started
             if ($session->datetimeknown && facetoface_has_session_started($session, $timenow) && facetoface_is_session_in_progress($session, $timenow)) {
                 $sessionstarted = true;
-            }
-            elseif ($session->datetimeknown && facetoface_has_session_started($session, $timenow)) {
+            } elseif ($session->datetimeknown && facetoface_has_session_started($session, $timenow)) {
                 $sessionstarted = true;
             }
-
             // Put the row in the right table
             if ($sessionstarted) {
                 $previousarray[] = $sessiondata;
-            }
-            elseif ($sessionwaitlisted) {
+            } elseif ($sessionwaitlisted) {
                 $upcomingtbdarray[] = $sessiondata;
-            }
-            else { // Normal scheduled session
+            } else { // Normal scheduled session
                 $upcomingarray[] = $sessiondata;
             }
         }
@@ -176,8 +175,7 @@ function print_session_list($courseid, $facetofaceid, $location) {
     echo $OUTPUT->heading(get_string('upcomingsessions', 'facetoface'));
     if (empty($upcomingarray) && empty($upcomingtbdarray)) {
         print_string('noupcoming', 'facetoface');
-    }
-    else {
+    } else {
         $upcomingarray = array_merge($upcomingarray, $upcomingtbdarray);
         echo $f2f_renderer->print_session_list_table($customfields, $upcomingarray, $viewattendees, $editsessions);
     }
@@ -206,17 +204,14 @@ function get_locations($facetofaceid) {
     if (!$locationfieldid) {
         return array();
     }
-
-    $sql = "SELECT DISTINCT d.data AS location
-              FROM {facetoface} f
+    $sql = "SELECT DISTINCT d.data AS location FROM {facetoface} f
               JOIN {facetoface_sessions} s ON s.facetoface = f.id
               JOIN {facetoface_session_data} d ON d.sessionid = s.id
              WHERE f.id = ? AND d.fieldid = ?";
 
     if ($records = $DB->get_records_sql($sql, array($facetofaceid, $locationfieldid))) {
         $locationmenu[''] = get_string('alllocations', 'facetoface');
-
-        $i=1;
+        $i = 1;
         foreach ($records as $record) {
             $locationmenu[$record->location] = $record->location;
             $i++;

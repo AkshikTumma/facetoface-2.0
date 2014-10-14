@@ -15,7 +15,12 @@ require_course_login($course);
 $context = context_course::instance($course->id);
 require_capability('mod/facetoface:view', $context);
 
-add_to_log($course->id, 'facetoface', 'view all', "index.php?id=$course->id");
+//add_to_log($course->id, 'facetoface', 'view all', "index.php?id=$course->id");
+//Replacing add_to_log() with $event->trigger()
+//
+$eventparams = array('context' => context_course::instance($course->id));
+$event = \mod_facetoface\event\course_module_instance_list_viewed::create($eventparams);
+$event->trigger();
 
 $strfacetofaces = get_string('modulenameplural', 'facetoface');
 $strfacetoface = get_string('modulename', 'facetoface');
@@ -45,24 +50,20 @@ $table = new html_table();
 $table->width = '100%';
 
 if ($course->format == 'weeks' && has_capability('mod/facetoface:viewattendees', $context)) {
-    $table->head  = array ($strweek, $strfacetofacename, get_string('sign-ups', 'facetoface'));
-    $table->align = array ('center', 'left', 'center');
-}
-elseif ($course->format == 'weeks') {
-    $table->head  = array ($strweek, $strfacetofacename);
-    $table->align = array ('center', 'left', 'center', 'center');
-}
-elseif ($course->format == 'topics' && has_capability('mod/facetoface:viewattendees', $context)) {
-    $table->head  = array ($strcourse, $strfacetofacename, get_string('sign-ups', 'facetoface'));
-    $table->align = array ('center', 'left', 'center');
-}
-elseif ($course->format == 'topics') {
-    $table->head  = array ($strcourse, $strfacetofacename);
-    $table->align = array ('center', 'left', 'center', 'center');
-}
-else {
-    $table->head  = array ($strfacetofacename);
-    $table->align = array ('left', 'left');
+    $table->head = array($strweek, $strfacetofacename, get_string('sign-ups', 'facetoface'));
+    $table->align = array('center', 'left', 'center');
+} elseif ($course->format == 'weeks') {
+    $table->head = array($strweek, $strfacetofacename);
+    $table->align = array('center', 'left', 'center', 'center');
+} elseif ($course->format == 'topics' && has_capability('mod/facetoface:viewattendees', $context)) {
+    $table->head = array($strcourse, $strfacetofacename, get_string('sign-ups', 'facetoface'));
+    $table->align = array('center', 'left', 'center');
+} elseif ($course->format == 'topics') {
+    $table->head = array($strcourse, $strfacetofacename);
+    $table->align = array('center', 'left', 'center', 'center');
+} else {
+    $table->head = array($strfacetofacename);
+    $table->align = array('left', 'left');
 }
 
 $currentsection = '';
@@ -74,8 +75,7 @@ foreach ($facetofaces as $facetoface) {
     if (!$facetoface->visible) {
         //Show dimmed if the mod is hidden
         $link = html_writer::link("view.php?f=$facetoface->id", $facetoface->name, array('class' => 'dimmed'));
-    }
-    else {
+    } else {
         //Show normal if the mod is visible
         $link = html_writer::link("view.php?f=$facetoface->id", $facetoface->name);
     }
@@ -101,18 +101,15 @@ foreach ($facetofaces as $facetoface) {
     $courselink = html_writer::link($url, $course->shortname, array('title' => $course->shortname));
     if ($course->format == 'weeks' or $course->format == 'topics') {
         if (has_capability('mod/facetoface:viewattendees', $context)) {
-            $table->data[] = array ($courselink, $link, $totalsignupcount);
+            $table->data[] = array($courselink, $link, $totalsignupcount);
+        } else {
+            $table->data[] = array($courselink, $link);
         }
-        else {
-            $table->data[] = array ($courselink, $link);
-        }
-    }
-    else {
-        $table->data[] = array ($link, $submitted);
+    } else {
+        $table->data[] = array($link, $submitted);
     }
 }
 
 echo html_writer::empty_tag('br');
-
 echo html_writer::table($table);
 echo $OUTPUT->footer($course);
