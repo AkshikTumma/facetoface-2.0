@@ -1,4 +1,5 @@
 <?php
+
 $string['addmanageremailaddress'] = 'Add manager email address';
 $string['addmanageremailinstruction'] = 'You have not previously entered your manager\'s email address. Please enter it below to sign-up for this session. ';
 $string['addsession'] = 'Add a new session';
@@ -707,3 +708,17 @@ $string['disablenewenrolldays'] = 'Days before a session starts';
 $string['disablenewenrolldays_help'] = 'Set how many days before a session starts. 0 day means an user will not be enrolled on the same day the session is';
 $string['showall'] = 'Show all';
 
+// Localized names for events in facetoface 
+$string['eventapproverequests'] = 'Approve requests';
+$string['eventviewattendees'] = 'View attendance list and attendees';
+$string['eventtakeattendance'] = 'Take Attendance';
+$string['eventcancelbooking'] = 'Cancel booking';
+$string['eventdeletesession'] = 'Delete session';
+$string['eventdeletesessionfailed'] = 'Could not delete session';
+$string['eventupdatesession'] = 'Update session';
+$string['eventupdatesessionfailed'] = 'Could not update session';
+$string['eventaddsession'] = 'Add a new session';
+$string['eventaddsessionfailed'] = 'Could not add a new session';
+$string['eventupdatemanageremailfailed'] = 'Manager email update failed';
+$string['eventsignupfailed'] = 'Signup for a session failed';
+$string['eventsignupsuccess'] = 'Signup for a session success';
