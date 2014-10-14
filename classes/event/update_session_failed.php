@@ -16,6 +16,19 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * The mod_facetoface  course module viewed event class.
+ *
+ * @package    mod_facetoface
+ * @since      Moodle 2.6
+ * @copyright  2013 Adrian Greeve
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+namespace mod_facetoface\event;
+
+defined('MOODLE_INTERNAL') || die();
+
+/**
  * The mod_facetoface module viewed event class.
  *
  * @package    mod_facetoface
@@ -25,11 +38,6 @@
  * 
  * @author Akshik Tumma <atumma@iastate.edu>
  */
-
-namespace mod_facetoface\event;
-
-defined('MOODLE_INTERNAL') || die();
-
 class update_session_failed extends \core\event\base {
 
     /**
