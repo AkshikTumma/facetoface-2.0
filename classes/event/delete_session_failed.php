@@ -32,7 +32,7 @@ defined('MOODLE_INTERNAL') || die();
  * The mod_facetoface module viewed event class.
  *
  * @package    mod_facetoface
- * @since      Moodle 2.6
+ * @since      Moodle 2.7
  * @copyright  2013 Adrian Greeve
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * 
