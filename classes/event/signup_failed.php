@@ -46,7 +46,7 @@ class signup_failed extends \core\event\base {
     protected function init() {
         $this->data['crud'] = 'c';
         $this->data['edulevel'] = self::LEVEL_PARTICIPATING;
-        $this->data['objecttable'] = 'facetoface_user';
+        $this->data['objecttable'] = 'facetoface_signups';
     }
 
     /**
