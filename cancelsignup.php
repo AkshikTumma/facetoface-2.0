@@ -6,8 +6,8 @@ require_once 'cancelsignup_form.php';
 
 global $DB;
 
-$s  = required_param('s', PARAM_INT); // facetoface session ID
-$confirm           = optional_param('confirm', false, PARAM_BOOL);
+$s = required_param('s', PARAM_INT); // facetoface session ID
+$confirm = optional_param('confirm', false, PARAM_BOOL);
 $backtoallsessions = optional_param('backtoallsessions', 0, PARAM_INT);
 
 if (!$session = facetoface_get_session($s)) {
@@ -38,7 +38,6 @@ if ($mform->is_cancelled()) {
 }
 
 if ($fromform = $mform->get_data()) { // Form submitted
-
     if (empty($fromform->submitbutton)) {
         print_error('error:unknownbuttonclicked', 'facetoface', $returnurl);
     }
@@ -47,8 +46,11 @@ if ($fromform = $mform->get_data()) { // Form submitted
 
     $errorstr = '';
     if (facetoface_user_cancel($session, false, false, $errorstr, $fromform->cancelreason)) {
-        add_to_log($course->id, 'facetoface', 'cancel booking', "cancelsignup.php?s=$session->id", $facetoface->id, $cm->id);
-
+        //add_to_log($course->id, 'facetoface', 'cancel booking', "cancelsignup.php?s=$session->id", $facetoface->id, $cm->id);
+        //Replacing add_to_log() with $event->trigger()
+        $eventparams = array('objectid' => $facetoface->id, 'context' => context_module::instance($cm->id));
+        $event = \mod_facetoface\event\cancel_booking_success::create($eventparams);
+        $event->trigger();
         $message = get_string('bookingcancelled', 'facetoface');
 
         if ($session->datetimeknown) {
@@ -56,8 +58,7 @@ if ($fromform = $mform->get_data()) { // Form submitted
             if (empty($error)) {
                 if ($session->datetimeknown && $facetoface->cancellationinstrmngr) {
                     $message .= html_writer::empty_tag('br') . html_writer::empty_tag('br') . get_string('cancellationsentmgr', 'facetoface');
-                }
-                else {
+                } else {
                     $message .= html_writer::empty_tag('br') . html_writer::empty_tag('br') . get_string('cancellationsent', 'facetoface');
                 }
             } else {
@@ -66,9 +67,12 @@ if ($fromform = $mform->get_data()) { // Form submitted
         }
 
         redirect($returnurl, $message, $timemessage);
-    }
-    else {
-        add_to_log($course->id, 'facetoface', "cancel booking (FAILED)", "cancelsignup.php?s=$session->id", $facetoface->id, $cm->id);
+    } else {
+        //add_to_log($course->id, 'facetoface', "cancel booking (FAILED)", "cancelsignup.php?s=$session->id", $facetoface->id, $cm->id);
+        //Replacing add_to_log() with $event->trigger()
+        $eventparams = array('objectid' => $facetoface->id, 'context' => context_module::instance($cm->id));
+        $event = \mod_facetoface\event\cancel_booking_failed::create($eventparams);
+        $event->trigger();
         redirect($returnurl, $errorstr, $timemessage);
     }
 
@@ -96,8 +100,7 @@ echo $OUTPUT->heading($heading);
 if ($signedup) {
     facetoface_print_session($session, $viewattendees);
     $mform->display();
-}
-else {
+} else {
     print_error('notsignedup', 'facetoface', $returnurl);
 }
 
