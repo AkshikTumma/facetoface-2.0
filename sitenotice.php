@@ -5,8 +5,8 @@ require_once 'sitenotice_form.php';
 
 global $DB;
 
-$id      = required_param('id', PARAM_INT); // ID in facetoface_notice
-$d       = optional_param('d', false, PARAM_BOOL); // set to true to delete the given notice
+$id = required_param('id', PARAM_INT); // ID in facetoface_notice
+$d = optional_param('d', false, PARAM_BOOL); // set to true to delete the given notice
 $confirm = optional_param('confirm', false, PARAM_BOOL); // delete confirmation
 
 $notice = null;
@@ -45,13 +45,10 @@ if (!empty($d)) {
         $info->name = format_string($notice->name);
         $info->text = format_text($notice->text, FORMAT_HTML);
         $optionsyes = array('id' => $id, 'sesskey' => $USER->sesskey, 'd' => 1, 'confirm' => 1);
-        echo $OUTPUT->confirm(get_string('noticedeleteconfirm', 'facetoface', $info),
-            new moodle_url("sitenotice.php", $optionsyes),
-            new moodle_url($returnurl));
+        echo $OUTPUT->confirm(get_string('noticedeleteconfirm', 'facetoface', $info), new moodle_url("sitenotice.php", $optionsyes), new moodle_url($returnurl));
         echo $OUTPUT->footer();
         exit;
-    }
-    else {
+    } else {
         $transaction = $DB->start_delegated_transaction();
         $DB->delete_records('facetoface_notice', array('id' => $id));
         $DB->delete_records('facetoface_notice_data', array('noticeid' => $id));
@@ -68,7 +65,6 @@ if ($mform->is_cancelled()) {
 }
 
 if ($fromform = $mform->get_data()) { // Form submitted
-
     if (empty($fromform->submitbutton)) {
         print_error('error:unknownbuttonclicked', 'facetoface', $returnurl);
     }
@@ -97,7 +93,6 @@ if ($fromform = $mform->get_data()) { // Form submitted
     }
     $transaction->allow_commit();
     redirect($returnurl);
-
 } else if ($notice != null) { // Edit mode
     // Set values for the form
     $toform = new stdClass();

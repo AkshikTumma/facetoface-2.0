@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright (C) 2010-2012 Totara Learning Solutions LTD
  *
@@ -26,11 +27,11 @@ if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');    ///  It must be included from a Moodle page
 }
 
-$handlers = array (
+$handlers = array(
     'user_deleted' => array(
-        'handlerfile'       => '/mod/facetoface/lib.php',
-        'handlerfunction'   => 'facetoface_eventhandler_user_deleted',
-        'schedule'          => 'instant'
+        'handlerfile' => '/mod/facetoface/lib.php',
+        'handlerfunction' => 'facetoface_eventhandler_user_deleted',
+        'schedule' => 'instant'
     )
 );
 

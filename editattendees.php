@@ -1,4 +1,5 @@
 <?php
+
 require_once '../../config.php';
 require_once 'lib.php';
 
@@ -6,12 +7,12 @@ global $DB, $THEME;
 
 define('MAX_USERS_PER_PAGE', 5000);
 
-$s              = required_param('s', PARAM_INT); // facetoface session ID
-$add            = optional_param('add', 0, PARAM_BOOL);
-$remove         = optional_param('remove', 0, PARAM_BOOL);
-$showall        = optional_param('showall', 0, PARAM_BOOL);
-$searchtext     = optional_param('searchtext', '', PARAM_TEXT); // search string
-$suppressemail  = optional_param('suppressemail', false, PARAM_BOOL); // send email notifications
+$s = required_param('s', PARAM_INT); // facetoface session ID
+$add = optional_param('add', 0, PARAM_BOOL);
+$remove = optional_param('remove', 0, PARAM_BOOL);
+$showall = optional_param('showall', 0, PARAM_BOOL);
+$searchtext = optional_param('searchtext', '', PARAM_TEXT); // search string
+$suppressemail = optional_param('suppressemail', false, PARAM_BOOL); // send email notifications
 $previoussearch = optional_param('previoussearch', 0, PARAM_BOOL);
 $backtoallsessions = optional_param('backtoallsessions', 0, PARAM_INT); // facetoface activity to go back to
 
@@ -42,8 +43,8 @@ $strfacetoface = get_string('modulename', 'facetoface');
 
 $errors = array();
 // Get the user_selector we will need.
-$potentialuserselector = new facetoface_candidate_selector('addselect', array('sessionid'=>$session->id));
-$existinguserselector = new facetoface_existing_selector('removeselect', array('sessionid'=>$session->id));
+$potentialuserselector = new facetoface_candidate_selector('addselect', array('sessionid' => $session->id));
+$existinguserselector = new facetoface_existing_selector('removeselect', array('sessionid' => $session->id));
 
 // Process incoming user assignments
 if (optional_param('add', false, PARAM_BOOL) && confirm_sesskey()) {
@@ -79,8 +80,7 @@ if (optional_param('add', false, PARAM_BOOL) && confirm_sesskey()) {
                 } else {
                     $status = MDL_F2F_STATUS_WAITLISTED;
                 }
-                if (!facetoface_user_signup($session, $facetoface, $course, '', MDL_F2F_BOTH,
-                $status, $adduser, !$suppressemail)) {
+                if (!facetoface_user_signup($session, $facetoface, $course, '', MDL_F2F_BOTH, $status, $adduser, !$suppressemail)) {
                     $erruser = $DB->get_record('user', array('id' => $adduser), "id, {$usernamefields}");
                     $errors[] = get_string('error:addattendee', 'facetoface', fullname($erruser));
                 }
@@ -110,7 +110,7 @@ if (optional_param('remove', false, PARAM_BOOL) && confirm_sesskey()) {
             } else {
                 $errors[] = $cancelerr;
                 $usernamefields = get_all_user_name_fields(true);
-                $erruser = $DB->get_record('user', array('id' => $removeuser),"id, {$usernamefields}");
+                $erruser = $DB->get_record('user', array('id' => $removeuser), "id, {$usernamefields}");
                 $errors[] = get_string('error:removeattendee', 'facetoface', fullname($erruser));
             }
         }
@@ -150,8 +150,8 @@ $content .= $existinguserselector->display(true);
 $cell = new html_table_cell($content);
 $cell->attributes['id'] = 'existingcell';
 $cells[] = $cell;
-$content = html_writer::tag('div', html_writer::empty_tag('input', array('type' => 'submit', 'id' => 'add', 'name' => 'add', 'title' => get_string('add'), 'value' => $OUTPUT->larrow().' '.get_string('add'))), array('id' => 'addcontrols'));
-$content .= html_writer::tag('div', html_writer::empty_tag('input', array('type' => 'submit', 'id' => 'remove', 'name' => 'remove', 'title' => get_string('remove'), 'value' => $OUTPUT->rarrow().' '.get_string('remove'))), array('id' => 'removecontrols'));
+$content = html_writer::tag('div', html_writer::empty_tag('input', array('type' => 'submit', 'id' => 'add', 'name' => 'add', 'title' => get_string('add'), 'value' => $OUTPUT->larrow() . ' ' . get_string('add'))), array('id' => 'addcontrols'));
+$content .= html_writer::tag('div', html_writer::empty_tag('input', array('type' => 'submit', 'id' => 'remove', 'name' => 'remove', 'title' => get_string('remove'), 'value' => $OUTPUT->rarrow() . ' ' . get_string('remove'))), array('id' => 'removecontrols'));
 $cell = new html_table_cell($content);
 $cell->attributes['id'] = 'buttonscell';
 $cells[] = $cell;
@@ -168,56 +168,41 @@ $cell->attributes['id'] = 'backcell';
 $cell->attributes['colspan'] = '3';
 $table->data[] = new html_table_row(array($cell));
 
-$out .=  html_writer::table($table);
+$out .= html_writer::table($table);
 
-    // Get all signed up non-attendees
-    $nonattendees = 0;
-    $usernamefields = get_all_user_name_fields(true, 'u');
-    $nonattendees_rs = $DB->get_recordset_sql(
-         "SELECT
-                u.id,
-                {$usernamefields},
-                u.email,
-                ss.statuscode
-            FROM
-                {facetoface_sessions} s
-            JOIN
-                {facetoface_signups} su
-             ON s.id = su.sessionid
-            JOIN
-                {facetoface_signups_status} ss
-             ON su.id = ss.signupid
-            JOIN
-                {user} u
-             ON u.id = su.userid
-            WHERE
-                s.id = ?
-            AND ss.superceded != 1
-            AND ss.statuscode = ?
-            ORDER BY
-                u.lastname, u.firstname", array($session->id, MDL_F2F_STATUS_REQUESTED)
-    );
+// Get all signed up non-attendees
+$nonattendees = 0;
+$usernamefields = get_all_user_name_fields(true, 'u');
+$nonattendees_rs = $DB->get_recordset_sql(
+        "SELECT   u.id,     {$usernamefields}, u.email, ss.statuscode
+            FROM    {facetoface_sessions} s
+            JOIN     {facetoface_signups} su   ON s.id = su.sessionid
+            JOIN   {facetoface_signups_status} ss    ON su.id = ss.signupid
+            JOIN   {user} u  ON u.id = su.userid
+            WHERE    s.id = ?  AND ss.superceded != 1   AND ss.statuscode = ?
+            ORDER BY   u.lastname, u.firstname", array($session->id, MDL_F2F_STATUS_REQUESTED)
+);
 
-    $table = new html_table();
-    $table->head = array(get_string('name'), get_string('email'), get_string('status'));
-    foreach ($nonattendees_rs as $user) {
-        $data = array();
-        $data[] = new html_table_cell(fullname($user));
-        $data[] = new html_table_cell($user->email);
-        $data[] = new html_table_cell(get_string('status_'.facetoface_get_status($user->statuscode), 'facetoface'));
-        $row = new html_table_row($data);
-        $table->data[] = $row;
-        $nonattendees++;
-    }
-    $nonattendees_rs->close();
-    if ($nonattendees) {
-        $out .= html_writer::empty_tag('br');
-        $out .=  $OUTPUT->heading(get_string('unapprovedrequests', 'facetoface').' ('.$nonattendees.')');
-        $out .=  html_writer::table($table);
-    }
+$table = new html_table();
+$table->head = array(get_string('name'), get_string('email'), get_string('status'));
+foreach ($nonattendees_rs as $user) {
+    $data = array();
+    $data[] = new html_table_cell(fullname($user));
+    $data[] = new html_table_cell($user->email);
+    $data[] = new html_table_cell(get_string('status_' . facetoface_get_status($user->statuscode), 'facetoface'));
+    $row = new html_table_row($data);
+    $table->data[] = $row;
+    $nonattendees++;
+}
+$nonattendees_rs->close();
+if ($nonattendees) {
+    $out .= html_writer::empty_tag('br');
+    $out .= $OUTPUT->heading(get_string('unapprovedrequests', 'facetoface') . ' (' . $nonattendees . ')');
+    $out .= html_writer::table($table);
+}
 
-    $out .= html_writer::end_tag('div') . html_writer::end_tag('form');
-    echo $out;
+$out .= html_writer::end_tag('div') . html_writer::end_tag('form');
+echo $out;
 
 if (!empty($errors)) {
     $msg = html_writer::start_tag('p');
