@@ -142,9 +142,18 @@ class mod_facetoface_renderer extends plugin_renderer_base {
             elseif (!$sessionstarted and !$bookedsession) {
                 $diffdays = ceil((abs(strtotime($sessionrow[0]) - time()))/86400); 
                 $disableddaysDB = $DB->get_record('facetoface_sessions', array('id'=>$session->id));
-                $disableddays = $disableddaysDB->disablenewenrolldays;
-                $disablesignup = $disableddaysDB->disablesignup;
-
+                 if (!empty($disableddaysDB->disablenewenrolldays)) {
+                    $disableddays = $disableddaysDB->disablenewenrolldays;
+                } else {
+                    $disableddays = 0;
+                }
+                if (!empty($disableddaysDB->disablesignup)) {
+                    $disablesignup = $disableddaysDB->disablesignup;
+                } else {
+                    $disablesignup = 0;
+                }
+//                $disableddays = $disableddaysDB->disablenewenrolldays;
+//                $disablesignup = $disableddaysDB->disablesignup;
                 if ($disablesignup) {
                     if($diffdays > $disableddays) {
                         //$options .= new moodle_url('signup.php', array('s' => $session->id, 'backtoallsessions' => $session->facetoface), get_string('signup', 'facetoface'));
