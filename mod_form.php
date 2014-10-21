@@ -1,14 +1,15 @@
 <?php
 
-require_once($CFG->dirroot . '/course/moodleform_mod.php');
-require_once($CFG->dirroot . '/mod/facetoface/lib.php');
+require_once($CFG->dirroot.'/course/moodleform_mod.php');
+require_once($CFG->dirroot.'/mod/facetoface/lib.php');
 
 class mod_facetoface_mod_form extends moodleform_mod {
 
-    function definition() {
+    function definition()
+    {
         global $CFG;
 
-        $mform = & $this->_form;
+        $mform =& $this->_form;
 
         // GENERAL
         $mform->addElement('header', 'general', get_string('general', 'form'));
@@ -20,7 +21,9 @@ class mod_facetoface_mod_form extends moodleform_mod {
             $mform->setType('name', PARAM_CLEANHTML);
         }
         $mform->addRule('name', null, 'required', null, 'client');
+
         $this->add_intro_editor(true);
+
         $mform->addElement('text', 'thirdparty', get_string('thirdpartyemailaddress', 'facetoface'), array('size' => '64'));
         $mform->setType('thirdparty', PARAM_EMAIL);
         $mform->addHelpButton('thirdparty', 'thirdpartyemailaddress', 'facetoface');
@@ -29,7 +32,7 @@ class mod_facetoface_mod_form extends moodleform_mod {
         $mform->addHelpButton('thirdpartywaitlist', 'thirdpartywaitlist', 'facetoface');
 
         $display = array();
-        for ($i = 0; $i <= 18; $i += 2) {
+        for ($i=0; $i<=18; $i += 2) {
             $display[$i] = $i;
         }
         $mform->addElement('select', 'display', get_string('sessionsoncoursepage', 'facetoface'), $display);
@@ -42,9 +45,9 @@ class mod_facetoface_mod_form extends moodleform_mod {
         $mform->addElement('header', 'calendaroptions', get_string('calendaroptions', 'facetoface'));
 
         $calendarOptions = array(
-            F2F_CAL_NONE => get_string('none'),
-            F2F_CAL_COURSE => get_string('course'),
-            F2F_CAL_SITE => get_string('site')
+            F2F_CAL_NONE    =>  get_string('none'),
+            F2F_CAL_COURSE  =>  get_string('course'),
+            F2F_CAL_SITE    =>  get_string('site')
         );
         $mform->addElement('select', 'showoncalendar', get_string('showoncalendar', 'facetoface'), $calendarOptions);
         $mform->setDefault('showoncalendar', F2F_CAL_COURSE);
@@ -115,7 +118,7 @@ class mod_facetoface_mod_form extends moodleform_mod {
         $mform->setDefault('reminderinstrmngr', get_string('setting:defaultreminderinstrmngrdefault', 'facetoface'));
 
         $reminderperiod = array();
-        for ($i = 1; $i <= 20; $i += 1) {
+        for ($i=1; $i<=20; $i += 1) {
             $reminderperiod[$i] = $i;
         }
         $mform->addElement('select', 'reminderperiod', get_string('reminderperiod', 'facetoface'), $reminderperiod);
@@ -133,15 +136,15 @@ class mod_facetoface_mod_form extends moodleform_mod {
         $mform->addElement('textarea', 'waitlistedmessage', get_string('email:message', 'facetoface'), 'wrap="virtual" rows="15" cols="70"');
         $mform->setDefault('waitlistedmessage', get_string('setting:defaultwaitlistedmessagedefault', 'facetoface'));
 
-        $mform->addElement('checkbox', 'disableautoenroll', get_string('disableautoenroll', 'facetoface'));
+        $mform->addElement('checkbox', 'disableautoenroll', get_string('disableautoenroll','facetoface'));
         $mform->addHelpButton('disableautoenroll', 'disableautoenroll', 'facetoface');
-
+        
         $disableperiod = array();
-        for ($i = 0; $i <= 60; $i += 1) {
-            $disableperiod[$i] = $i;
+        for ($i=0; $i<=60; $i += 1) {
+                $disableperiod[$i] = $i;
         }
 
-        $mform->addElement('select', 'disablewithindays', get_string('disablewithindays', 'facetoface'), $disableperiod);
+        $mform->addElement('select', 'disablewithindays', get_string('disablewithindays', 'facetoface'),$disableperiod);
         $mform->setDefault('disablewithindays', 0);
         $mform->disabledIf('disablewithindays', 'disableautoenroll');
         $mform->addHelpButton('disablewithindays', 'disablewithindays', 'facetoface');
@@ -177,25 +180,28 @@ class mod_facetoface_mod_form extends moodleform_mod {
         $this->add_action_buttons();
     }
 
-    function data_preprocessing(&$default_values) {
+    function data_preprocessing(&$default_values)
+    {
         // Fix manager emails
         if (empty($default_values['confirmationinstrmngr'])) {
             $default_values['confirmationinstrmngr'] = null;
-        } else {
+        }
+        else {
             $default_values['emailmanagerconfirmation'] = 1;
         }
 
         if (empty($default_values['reminderinstrmngr'])) {
             $default_values['reminderinstrmngr'] = null;
-        } else {
+        }
+        else {
             $default_values['emailmanagerreminder'] = 1;
         }
 
         if (empty($default_values['cancellationinstrmngr'])) {
             $default_values['cancellationinstrmngr'] = null;
-        } else {
+        }
+        else {
             $default_values['emailmanagercancellation'] = 1;
         }
     }
-
 }

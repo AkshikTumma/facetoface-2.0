@@ -1,11 +1,10 @@
 <?php
-
 global $DB;
 require_once '../../config.php';
 require_once 'customfield_form.php';
 
-$id = required_param('id', PARAM_INT); // ID in facetoface_session_field
-$d = optional_param('d', false, PARAM_BOOL); // set to true to delete the given field
+$id      = required_param('id', PARAM_INT); // ID in facetoface_session_field
+$d       = optional_param('d', false, PARAM_BOOL); // set to true to delete the given field
 $confirm = optional_param('confirm', false, PARAM_BOOL); // delete confirmationx
 
 $field = null;
@@ -44,10 +43,13 @@ if (!empty($d)) {
         echo $OUTPUT->header();
         echo $OUTPUT->heading($title);
         $optionsyes = array('id' => $id, 'sesskey' => $USER->sesskey, 'd' => 1, 'confirm' => 1);
-        echo $OUTPUT->confirm(get_string('fielddeleteconfirm', 'facetoface', format_string($field->name)), new moodle_url("customfield.php", $optionsyes), new moodle_url($returnurl));
+        echo $OUTPUT->confirm(get_string('fielddeleteconfirm', 'facetoface', format_string($field->name)),
+            new moodle_url("customfield.php", $optionsyes),
+            new moodle_url($returnurl));
         echo $OUTPUT->footer();
         exit;
-    } else {
+    }
+    else {
         $transaction = $DB->start_delegated_transaction();
 
         try {
@@ -74,6 +76,7 @@ if ($mform->is_cancelled()) {
 }
 
 if ($fromform = $mform->get_data()) { // Form submitted
+
     if (empty($fromform->submitbutton)) {
         print_error('error:unknownbuttonclicked', 'facetoface', $returnurl);
     }
@@ -116,14 +119,16 @@ if ($fromform = $mform->get_data()) { // Form submitted
         if (!$DB->update_record('facetoface_session_field', $todb)) {
             print_error('error:couldnotupdatefield', 'facetoface', $returnurl);
         }
-    } else {
+    }
+    else {
         if (!$DB->insert_record('facetoface_session_field', $todb)) {
             print_error('error:couldnotaddfield', 'facetoface', $returnurl);
         }
     }
 
     redirect($returnurl);
-} elseif ($field != null) { // Edit mode
+}
+elseif ($field != null) { // Edit mode
     // Set values for the form
     $toform = new stdClass();
     $toform->name = $field->name;

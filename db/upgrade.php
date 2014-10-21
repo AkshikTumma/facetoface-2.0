@@ -32,26 +32,31 @@ function facetoface_send_admin_upgrade_msg($data) {
 
     $table = new html_table();
     $table->head = array('Custom field ID',
-        'Custom field original shortname',
-        'Custom field new shortname');
+                         'Custom field original shortname',
+                         'Custom field new shortname');
     $table->data = $data;
-    $table->align = array('center', 'center', 'center');
+    $table->align = array ('center', 'center', 'center');
 
-    $title = "$SITE->fullname: Face to Face upgrade info";
+    $title    = "$SITE->fullname: Face to Face upgrade info";
     $note = 'During the last site upgrade the face-to-face module has been modified. It now
 requires session custom fields to have unique shortnames. Since some of your
 custom fields had duplicate shortnames, they have been renamed to remove
 duplicates (see table below). This could impact on your email messages if you
 reference those custom fields in the message templates.';
-    $message = html_writer::start_tag('html') . html_writer::start_tag('head') . html_writer::tag('title', $title) . html_writer::end_tag('head');
-    $message .= html_writer::start_tag('body') . html_writer::tag('p', $note) . html_writer::table($table, true) . html_writer::end_tag('body') . html_writer::end_tag('html');
+    $message  = html_writer::start_tag('html') . html_writer::start_tag('head') . html_writer::tag('title', $title) . html_writer::end_tag('head');
+    $message .= html_writer::start_tag('body') . html_writer::tag('p', $note). html_writer::table($table,true) . html_writer::end_tag('body') . html_writer::end_tag('html');
 
     $admin = get_admin();
 
-    email_to_user($admin, $admin, $title, '', $message);
+    email_to_user($admin,
+                  $admin,
+                  $title,
+                  '',
+                  $message);
+
 }
 
-function xmldb_facetoface_upgrade($oldversion = 0) {
+function xmldb_facetoface_upgrade($oldversion=0) {
     global $CFG, $USER, $DB;
 
     $dbman = $DB->get_manager(); // loads ddl manager and xmldb classes
@@ -76,10 +81,11 @@ function xmldb_facetoface_upgrade($oldversion = 0) {
 
     if ($result && $oldversion < 2008080100) {
         echo $OUTPUT->notification(get_string('upgradeprocessinggrades', 'facetoface'), 'notifysuccess');
-        require_once $CFG->dirroot . '/mod/facetoface/lib.php';
+        require_once $CFG->dirroot.'/mod/facetoface/lib.php';
 
         $transaction = $DB->start_delegated_transaction();
         $DB->debug = false; // too much debug output
+
         // Migrate the grades to the gradebook
         $sql = "SELECT f.id, f.name, f.course, s.grade, s.timegraded, s.userid,
             cm.idnumber as cmidnumber
@@ -310,11 +316,12 @@ function xmldb_facetoface_upgrade($oldversion = 0) {
         } catch (Exception $e) {
             $transaction->rollback($e);
         }
+
     }
 
     if ($result && $oldversion < 2009122901) {
 
-        /// Create table facetoface_session_roles
+    /// Create table facetoface_session_roles
         $table = new xmldb_table('facetoface_session_roles');
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
         $table->add_field('sessionid', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, null);
@@ -324,7 +331,7 @@ function xmldb_facetoface_upgrade($oldversion = 0) {
         $table->add_key('sessionid', XMLDB_KEY_FOREIGN, array('sessionid'), 'facetoface_sessions', array('id'));
         $result = $result && $dbman->create_table($table);
 
-        /// Create table facetoface_signups
+    /// Create table facetoface_signups
         $table = new xmldb_table('facetoface_signups');
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
         $table->add_field('sessionid', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, null);
@@ -336,7 +343,7 @@ function xmldb_facetoface_upgrade($oldversion = 0) {
         $table->add_key('sessionid', XMLDB_KEY_FOREIGN, array('sessionid'), 'facetoface_sessions', array('id'));
         $result = $result && $dbman->create_table($table);
 
-        /// Create table facetoface_signups_status
+    /// Create table facetoface_signups_status
         $table = new xmldb_table('facetoface_signups_status');
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
         $table->add_field('signupid', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, null);
@@ -350,10 +357,10 @@ function xmldb_facetoface_upgrade($oldversion = 0) {
         $table->add_key('signupid', XMLDB_KEY_FOREIGN, array('signupid'), 'facetoface_signups', array('id'));
         $result = $result && $dbman->create_table($table);
 
-        /// Migrate submissions to signups
+    /// Migrate submissions to signups
         $table = new xmldb_table('facetoface_submissions');
         if ($dbman->table_exists($table)) {
-            require_once $CFG->dirroot . '/mod/facetoface/lib.php';
+            require_once $CFG->dirroot.'/mod/facetoface/lib.php';
 
             $transaction = $DB->start_delegated_transaction();
 
@@ -379,7 +386,7 @@ function xmldb_facetoface_upgrade($oldversion = 0) {
                 $facetoface = $DB->get_record('facetoface', 'id', $submission->facetoface);
                 if (!$facetoface) {
                     // If facetoface delete, ignore as it's of no use to us now
-                    mtrace('Could not find facetoface instance ' . $submission->facetoface);
+                    mtrace('Could not find facetoface instance '.$submission->facetoface);
                     continue;
                 }
 
@@ -425,7 +432,7 @@ function xmldb_facetoface_upgrade($oldversion = 0) {
             $result = $result && $dbman->drop_table($table);
         }
 
-        // New field necessary for overbooking
+    // New field necessary for overbooking
         $table = new xmldb_table('facetoface_sessions');
         $field1 = new xmldb_field('allowoverbook');
         $field1->set_attributes(XMLDB_TYPE_INTEGER, '1', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 0, 'capacity');
@@ -510,6 +517,7 @@ function xmldb_facetoface_upgrade($oldversion = 0) {
         if ($dbman->field_exists($table, $field)) {
             $result = $result && $dbman->drop_field($table, $field, false, true);
         }
+
     }
 
     // 2.0 upgrade line -----------------------------------
@@ -517,7 +525,7 @@ function xmldb_facetoface_upgrade($oldversion = 0) {
     if ($oldversion < 2011120701) {
         // Update existing select fields to use new seperator
         $badrows = $DB->get_records_sql(
-                "
+            "
                 SELECT
                     *
                 FROM
@@ -525,7 +533,7 @@ function xmldb_facetoface_upgrade($oldversion = 0) {
                 WHERE
                     possiblevalues LIKE '%;%'
                 AND possiblevalues NOT LIKE '%" . CUSTOMFIELD_DELIMITER . "%'
-                AND type IN (" . CUSTOMFIELD_TYPE_SELECT . "," . CUSTOMFIELD_TYPE_MULTISELECT . ")
+                AND type IN (".CUSTOMFIELD_TYPE_SELECT.",".CUSTOMFIELD_TYPE_MULTISELECT.")
             "
         );
 
@@ -543,7 +551,7 @@ function xmldb_facetoface_upgrade($oldversion = 0) {
         }
 
         $bad_data_rows = $DB->get_records_sql(
-                "
+            "
                 SELECT
                     sd.id, sd.data
                 FROM
@@ -554,8 +562,8 @@ function xmldb_facetoface_upgrade($oldversion = 0) {
                     sd.fieldid=sf.id
                 WHERE
                     sd.data LIKE '%;%'
-                AND sd.data NOT LIKE '%" . CUSTOMFIELD_DELIMITER . "%'
-                AND sf.type = " . CUSTOMFIELD_TYPE_MULTISELECT
+                AND sd.data NOT LIKE '%". CUSTOMFIELD_DELIMITER ."%'
+                AND sf.type = ".CUSTOMFIELD_TYPE_MULTISELECT
         );
 
         if ($bad_data_rows) {
@@ -612,11 +620,11 @@ function xmldb_facetoface_upgrade($oldversion = 0) {
                 //$rs = facetoface_tbl_duplicate_values('facetoface_session_field','shortname');
                 if ($rs !== false) {
                     foreach ($rs as $item) {
-                        $data = (object) $item;
+                        $data = (object)$item;
                         //randomize the value
-                        $data->shortname = $DB->escape($data->shortname . '_' . $data->id);
+                        $data->shortname = $DB->escape($data->shortname.'_'.$data->id);
                         $DB->update_record('facetoface_session_field', $data);
-                        $replacements[] = array($item['id'], $item['shortname'], $data->shortname);
+                        $replacements[]=array($item['id'], $item['shortname'], $data->shortname);
                     }
                 }
 
@@ -694,7 +702,7 @@ function xmldb_facetoface_upgrade($oldversion = 0) {
         $field = new xmldb_field('disablewithindays', XMLDB_TYPE_INTEGER, '3', null, XMLDB_NOTNULL, null, '0', 'approvalreqd');
 
         if (!$dbman->field_exists($table, $field)) {
-            $dbman->add_field($table, $field);
+                $dbman->add_field($table, $field);
         }
 
         // facetoface savepoint reached
@@ -704,14 +712,14 @@ function xmldb_facetoface_upgrade($oldversion = 0) {
         $field = new xmldb_field('disablenewenrolldays', XMLDB_TYPE_INTEGER, '3', null, XMLDB_NOTNULL, null, '0', 'timemodified');
 
         if (!$dbman->field_exists($table, $field)) {
-            $dbman->add_field($table, $field);
+                $dbman->add_field($table, $field);
         }
 
         $table = new xmldb_table('facetoface_sessions');
         $field = new xmldb_field('disablesignup', XMLDB_TYPE_INTEGER, '1', XMLDB_UNSIGNED, null, null, null, 'disablenewenrolldays');
 
         if (!$dbman->field_exists($table, $field)) {
-            $dbman->add_field($table, $field);
+                $dbman->add_field($table, $field);
         }
 
         // facetoface savepoint reached

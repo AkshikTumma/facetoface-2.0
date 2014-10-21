@@ -1,5 +1,4 @@
 <?php
-
 //
 // Capability definitions for the facetoface module.
 //
@@ -32,6 +31,7 @@
 // For the core capabilities, the variable is $moodle_capabilities.
 
 $capabilities = array(
+
     // Ability to see that the activity exists, and the basic information
     // about its sessions
     'mod/facetoface:view' => array(
@@ -46,6 +46,7 @@ $capabilities = array(
             'manager' => CAP_ALLOW
         )
     ),
+
     // Ability to signup for a session
     'mod/facetoface:signup' => array(
         'captype' => 'write',
@@ -58,6 +59,7 @@ $capabilities = array(
             'manager' => CAP_ALLOW
         )
     ),
+
     // Ability to see activities for which no sessions have been added
     'mod/facetoface:viewemptyactivities' => array(
         'captype' => 'read',
@@ -68,6 +70,7 @@ $capabilities = array(
             'manager' => CAP_ALLOW
         )
     ),
+
     // Ability to see how many people have signed up for a session
     'mod/facetoface:viewattendees' => array(
         'captype' => 'read',
@@ -79,6 +82,7 @@ $capabilities = array(
             'manager' => CAP_ALLOW
         )
     ),
+
     // Ability to take attendance
     'mod/facetoface:takeattendance' => array(
         'captype' => 'write',
@@ -90,6 +94,7 @@ $capabilities = array(
             'manager' => CAP_ALLOW
         )
     ),
+
     // Ability to add attendees to a session
     'mod/facetoface:addattendees' => array(
         'captype' => 'write',
@@ -101,6 +106,7 @@ $capabilities = array(
             'manager' => CAP_ALLOW
         )
     ),
+
     // Ability to remove attendees from a session
     'mod/facetoface:removeattendees' => array(
         'captype' => 'write',
@@ -112,6 +118,7 @@ $capabilities = array(
             'manager' => CAP_ALLOW
         )
     ),
+
     // Ability to add, edit, copy and delete a session
     'mod/facetoface:editsessions' => array(
         'captype' => 'write',
@@ -123,6 +130,7 @@ $capabilities = array(
             'manager' => CAP_ALLOW
         )
     ),
+
     // View session cancellations
     'mod/facetoface:viewcancellations' => array(
         'captype' => 'write',
@@ -134,6 +142,7 @@ $capabilities = array(
             'manager' => CAP_ALLOW
         ),
     ),
+
     // Ability to overbook a session by signing up for it
     // Users with mod/facetoface:addattendees can also overbook
     'mod/facetoface:overbook' => array(
@@ -146,6 +155,7 @@ $capabilities = array(
             'manager' => CAP_ALLOW
         ),
     ),
+
     // Ability to add a new facetoface activity to a course
     'mod/facetoface:addinstance' => array(
         'captype' => 'write',
@@ -156,4 +166,5 @@ $capabilities = array(
         ),
     ),
 );
+
 ?>

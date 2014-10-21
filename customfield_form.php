@@ -5,8 +5,9 @@ require_once "$CFG->dirroot/mod/facetoface/lib.php";
 
 class mod_facetoface_customfield_form extends moodleform {
 
-    function definition() {
-        $mform = & $this->_form;
+    function definition()
+    {
+        $mform =& $this->_form;
 
         $mform->addElement('header', 'general', get_string('general', 'form'));
 
@@ -21,10 +22,10 @@ class mod_facetoface_customfield_form extends moodleform {
         $mform->addRule('shortname', null, 'required', null, 'client');
         $mform->setType('shortname', PARAM_ALPHANUM);
 
-        $options = array(CUSTOMFIELD_TYPE_TEXT => get_string('field:text', 'facetoface'),
-            CUSTOMFIELD_TYPE_SELECT => get_string('field:select', 'facetoface'),
-            CUSTOMFIELD_TYPE_MULTISELECT => get_string('field:multiselect', 'facetoface'),
-        );
+        $options = array(CUSTOMFIELD_TYPE_TEXT        => get_string('field:text', 'facetoface'),
+                         CUSTOMFIELD_TYPE_SELECT      => get_string('field:select', 'facetoface'),
+                         CUSTOMFIELD_TYPE_MULTISELECT => get_string('field:multiselect', 'facetoface'),
+                         );
         $mform->addElement('select', 'type', get_string('setting:type', 'facetoface'), $options);
         $mform->addRule('type', null, 'required', null, 'client');
         $mform->setDefault('type', 0);
@@ -50,14 +51,13 @@ class mod_facetoface_customfield_form extends moodleform {
         global $DB;
 
         $errors = array();
-        $where = "id <> ? AND shortname = ?";
+        $where     = "id <> ? AND shortname = ?";
         $params = array($data['id'], $data['shortname']);
 
         if ($DB->record_exists_select('facetoface_session_field', $where, $params)) {
-            $errors['shortname'] = get_string('error:shortnametaken', 'facetoface');
+            $errors['shortname']= get_string('error:shortnametaken', 'facetoface');
         }
 
         return $errors;
     }
-
 }

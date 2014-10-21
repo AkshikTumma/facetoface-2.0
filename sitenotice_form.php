@@ -5,8 +5,9 @@ require_once "$CFG->dirroot/mod/facetoface/lib.php";
 
 class mod_facetoface_sitenotice_form extends moodleform {
 
-    function definition() {
-        $mform = & $this->_form;
+    function definition()
+    {
+        $mform =& $this->_form;
 
         $mform->addElement('header', 'general', get_string('general', 'form'));
 
@@ -17,7 +18,7 @@ class mod_facetoface_sitenotice_form extends moodleform {
         $mform->addRule('name', null, 'required', null, 'client');
         $mform->setType('name', PARAM_MULTILANG);
 
-        $mform->addElement('editor', 'text', get_string('noticetext', 'facetoface'), array('rows' => 10, 'cols' => 64));
+        $mform->addElement('editor', 'text', get_string('noticetext', 'facetoface'), array('rows'  => 10, 'cols'  => 64));
         $mform->setType('text', PARAM_RAW);
         $mform->addRule('text', null, 'required', null, 'client');
 
@@ -30,5 +31,4 @@ class mod_facetoface_sitenotice_form extends moodleform {
 
         $this->add_action_buttons();
     }
-
 }
